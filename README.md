@@ -42,6 +42,7 @@ That's it. You can test it by going to `localhost:8080` on your browser.
 
 
 ### Todo
+ - Write Tests
  - User signup/login feature
  - Authorization
  - Authentication
