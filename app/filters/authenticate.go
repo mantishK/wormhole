@@ -3,7 +3,7 @@ package filters
 import (
 	"net/http"
 
-	"github.com/filmtwine/backend/views"
+	"github.com/mantishK/wormhole/app/views"
 )
 
 type Authenticate struct {
