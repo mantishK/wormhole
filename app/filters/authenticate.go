@@ -15,7 +15,7 @@ func (a *Authenticate) Filter(writer http.ResponseWriter, req *http.Request, fil
 	Authenticated := true
 	view := views.NewView(writer)
 	if !Authenticated {
-		view.RenderHttpError("You are authenticated!!", 401)
+		view.RenderHttpError("You are not authenticated!!", 401)
 		return false
 	}
 	return Authenticated

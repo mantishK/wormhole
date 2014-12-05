@@ -8,6 +8,7 @@ import (
 
 type Todo struct {
 	TodoID      int       `db:"todo_id" json:"todo_id"`
+	UserID      int       `db:"user_id" json:"user_id"`
 	Title       string    `db:"title" json:"title"`
 	IsCompleted bool      `db:"is_completed" json:"isCompleted"`
 	Created     time.Time `db:"created" json:"created"`
@@ -51,9 +52,9 @@ func (t *Todo) Get(dbMap *gorp.DbMap) error {
 	return nil
 }
 
-func GetAllTodos(dbMap *gorp.DbMap, offset, count int) ([]Todo, int, error) {
+func GetAllUserTodos(dbMap *gorp.DbMap, userID, offset, count int) ([]Todo, int, error) {
 	var todos []Todo
-	_, err := dbMap.Select(&todos, "SELECT SQL_CALC_FOUND_ROWS * FROM todos LIMIT ?,?", offset, count)
+	_, err := dbMap.Select(&todos, "SELECT SQL_CALC_FOUND_ROWS * FROM todos WHERE user_id = ? LIMIT ?,?", userID, offset, count)
 	if err != nil {
 		return nil, 0, err
 	}

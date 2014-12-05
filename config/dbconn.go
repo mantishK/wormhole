@@ -33,6 +33,8 @@ func NewConnection() *gorp.DbMap {
 	// specifying that the Id property is an auto incrementing PK
 	// dbmap.AddTableWithName(model.Note{}, "note").SetKeys(true, "Note_id")
 	dbmap.AddTableWithName(model.Todo{}, "todos").SetKeys(true, "TodoID")
+	dbmap.AddTableWithName(model.User{}, "users").SetKeys(true, "UserID")
+	dbmap.AddTableWithName(model.UserToken{}, "user_token")
 
 	// create the table. in a production system you'd generally
 	// use a migration tool, or create the tables via scripts

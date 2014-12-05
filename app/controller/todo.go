@@ -39,6 +39,8 @@ func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string
 		return
 	}
 
+	todo.UserID = filterData["user_id"].(int)
+
 	//save todo
 	err = todo.Save(dbMap)
 	if err != nil {
@@ -74,6 +76,13 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
 	}
+
+	//check if the todo belongs to the user
+	userID := filterData["user_id"].(int)
+	if userID != todo.UserID {
+		view.RenderHttpError("You are unauthorized!!", 401)
+	}
+
 	todo.Title = data["title"].(string)
 	todo.IsCompleted = data["isCompleted"].(bool)
 	err = todo.Update(dbMap)
@@ -117,6 +126,13 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
 	}
+
+	//check if the todo belongs to the user
+	userID := filterData["user_id"].(int)
+	if userID != todo.UserID {
+		view.RenderHttpError("You are unauthorized!!", 401)
+	}
+
 	todo.Delete(dbMap)
 	if err != nil {
 		view.RenderErrorJson(apperror.NewDBError("", err))
@@ -156,11 +172,17 @@ func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string
 
 	result := make(map[string]interface{})
 
+	//check if the todo belongs to the user
+	userID := filterData["user_id"].(int)
+	if userID != todo.UserID {
+		view.RenderHttpError("You are unauthorized!!", 401)
+	}
+
 	result["todo"] = todo
 	view.RenderJson(result)
 }
 
-func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) GetAllUserTodos(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
 	dbMap, _, params := Init(w, r)
 	defer dbMap.Db.Close()
@@ -174,7 +196,9 @@ func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData ma
 		count, _ = strconv.Atoi(params.Get("count"))
 	}
 
-	todos, total, err := model.GetAllTodos(dbMap, offset, count)
+	userID := filterData["user_id"].(int)
+
+	todos, total, err := model.GetAllUserTodos(dbMap, userID, offset, count)
 	if err == sql.ErrNoRows {
 		view.RenderHttpError("No todos found.", http.StatusNotFound)
 		return

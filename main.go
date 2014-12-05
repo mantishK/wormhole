@@ -19,6 +19,7 @@ func route() {
 
 	//Create controller
 	todoController := controller.Todo{}
+	userController := controller.User{}
 
 	//version
 	version := make([]string, 5, 5)
@@ -37,11 +38,24 @@ func route() {
 	//route
 	for _, versionName := range version {
 		//todos
-		myRouter.Get(versionName, "/todo", todoController.Get, authenticateFilter)
-		myRouter.Get(versionName, "/todos", todoController.GetAllTodos, authenticateFilter)
-		myRouter.Post(versionName, "/todos", todoController.Add, authenticateFilter)
-		myRouter.Delete(versionName, "/todos", todoController.Delete, authenticateFilter)
+		myRouter.Get(versionName, "/todo", todoController.Get, authenticateFilter, authorizeFilter)
+		myRouter.Get(versionName, "/todos", todoController.GetAllUserTodos, authenticateFilter, authorizeFilter)
+		myRouter.Post(versionName, "/todos", todoController.Add, authenticateFilter, authorizeFilter)
+		myRouter.Delete(versionName, "/todos", todoController.Delete, authenticateFilter, authorizeFilter)
 		myRouter.Put(versionName, "/todos", todoController.Update, authenticateFilter, authorizeFilter)
+
+		//User
+		myRouter.Post(versionName, "/user", userController.SaveUser, authenticateFilter)
+		myRouter.Put(versionName, "/user", userController.UpdatePassword, authenticateFilter, authorizeFilter)
+		myRouter.Get(versionName, "/user", userController.GetUser, authorizeFilter, authenticateFilter)
+
+		//Check if user exists, could also be a Head request for user rather than Get
+		myRouter.Get(versionName, "/user_name_exists", userController.UserNameExists, authenticateFilter)
+
+		//Sessions
+		myRouter.Post(versionName, "/session", userController.SignIn, authenticateFilter)
+		myRouter.Delete(versionName, "/session", userController.SignOut, authenticateFilter, authorizeFilter)
+		myRouter.Put(versionName, "/session", userController.RenewToken, authenticateFilter, authorizeFilter)
 
 	}
 
