@@ -1,10 +1,6 @@
 package model
 
-import (
-	"time"
-
-	"github.com/coopernurse/gorp"
-)
+import "time"
 
 type Todo struct {
 	TodoID      int       `db:"todo_id" json:"todo_id"`
@@ -14,7 +10,8 @@ type Todo struct {
 	Modified    time.Time `db:"modified" json:"modified"`
 }
 
-func (t *Todo) Save(dbMap *gorp.DbMap) error {
+func (t *Todo) Save() error {
+	dbMap := MysqlConnection()
 	t.Created = time.Now()
 	t.Modified = time.Now()
 	err := dbMap.Insert(t)
@@ -24,7 +21,8 @@ func (t *Todo) Save(dbMap *gorp.DbMap) error {
 	return nil
 }
 
-func (t *Todo) Update(dbMap *gorp.DbMap) error {
+func (t *Todo) Update() error {
+	dbMap := MysqlConnection()
 	t.Modified = time.Now()
 	_, err := dbMap.Update(t)
 	if err != nil {
@@ -33,7 +31,8 @@ func (t *Todo) Update(dbMap *gorp.DbMap) error {
 	return nil
 }
 
-func (t *Todo) Delete(dbMap *gorp.DbMap) error {
+func (t *Todo) Delete() error {
+	dbMap := MysqlConnection()
 	t.Created = time.Now()
 	t.Modified = time.Now()
 	_, err := dbMap.Delete(t)
@@ -43,7 +42,17 @@ func (t *Todo) Delete(dbMap *gorp.DbMap) error {
 	return nil
 }
 
-func (t *Todo) Get(dbMap *gorp.DbMap) error {
+func DeleteAll() error {
+	dbMap := MysqlConnection()
+	_, err := dbMap.Exec("DELETE FROM todos")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Todo) Get() error {
+	dbMap := MysqlConnection()
 	err := dbMap.SelectOne(t, "SELECT * FROM todos WHERE todo_id = ?", t.TodoID)
 	if err != nil {
 		return err
@@ -51,7 +60,8 @@ func (t *Todo) Get(dbMap *gorp.DbMap) error {
 	return nil
 }
 
-func GetAllTodos(dbMap *gorp.DbMap, offset, count int) ([]Todo, int, error) {
+func GetAllTodos(offset, count int) ([]Todo, int, error) {
+	dbMap := MysqlConnection()
 	var todos []Todo
 	_, err := dbMap.Select(&todos, "SELECT SQL_CALC_FOUND_ROWS * FROM todos LIMIT ?,?", offset, count)
 	if err != nil {

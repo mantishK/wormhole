@@ -15,9 +15,9 @@ type Todo struct {
 }
 
 func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+	defer Terminate()
 	view := views.NewView(w)
-	dbMap, data, _ := Init(w, r)
-	defer dbMap.Db.Close()
+	data, _ := Init(w, r)
 	todo := model.Todo{}
 	requiredFields := []string{"title"}
 	count, err := validate.RequiredData(data, requiredFields)
@@ -40,7 +40,7 @@ func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string
 	}
 
 	//save todo
-	err = todo.Save(dbMap)
+	err = todo.Save()
 	if err != nil {
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
@@ -53,9 +53,9 @@ func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string
 }
 
 func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+	defer Terminate()
 	view := views.NewView(w)
-	dbMap, data, _ := Init(w, r)
-	defer dbMap.Db.Close()
+	data, _ := Init(w, r)
 	var err error
 	requiredFields := []string{"todo_id", "title", "isCompleted"}
 	count, err := validate.RequiredData(data, requiredFields)
@@ -65,7 +65,7 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 	}
 	todo := model.Todo{}
 	todo.TodoID = int(data["todo_id"].(float64))
-	err = todo.Get(dbMap)
+	err = todo.Get()
 	if err == sql.ErrNoRows {
 		view.RenderHttpError("Todo not found.", http.StatusNotFound)
 		return
@@ -76,7 +76,7 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 	}
 	todo.Title = data["title"].(string)
 	todo.IsCompleted = data["isCompleted"].(bool)
-	err = todo.Update(dbMap)
+	err = todo.Update()
 	if err != nil {
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
@@ -88,9 +88,9 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 }
 
 func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+	defer Terminate()
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
-	defer dbMap.Db.Close()
+	_, params := Init(w, r)
 	requiredFields := []string{"id"}
 	count, err := validate.RequiredParams(params, requiredFields)
 	if err != nil {
@@ -108,7 +108,7 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 		todo.TodoID = todoID
 	}
 
-	err = todo.Get(dbMap)
+	err = todo.Get()
 	if err == sql.ErrNoRows {
 		view.RenderHttpError("Todo not found.", http.StatusNotFound)
 		return
@@ -117,7 +117,7 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
 	}
-	todo.Delete(dbMap)
+	todo.Delete()
 	if err != nil {
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
@@ -129,9 +129,9 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 }
 
 func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+	defer Terminate()
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
-	defer dbMap.Db.Close()
+	_, params := Init(w, r)
 	requiredFields := []string{"todo_id"}
 	count, err := validate.RequiredParams(params, requiredFields)
 	if err != nil {
@@ -148,7 +148,7 @@ func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string
 		}
 		todo.TodoID = todoId
 	}
-	err = todo.Get(dbMap)
+	err = todo.Get()
 	if err != nil {
 		view.RenderErrorJson(apperror.NewDBError("", err))
 		return
@@ -161,9 +161,9 @@ func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string
 }
 
 func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+	defer Terminate()
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
-	defer dbMap.Db.Close()
+	_, params := Init(w, r)
 
 	offset := 0
 	count := 10
@@ -174,7 +174,7 @@ func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData ma
 		count, _ = strconv.Atoi(params.Get("count"))
 	}
 
-	todos, total, err := model.GetAllTodos(dbMap, offset, count)
+	todos, total, err := model.GetAllTodos(offset, count)
 	if err == sql.ErrNoRows {
 		view.RenderHttpError("No todos found.", http.StatusNotFound)
 		return
