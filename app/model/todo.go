@@ -43,6 +43,14 @@ func (t *Todo) Delete(dbMap *gorp.DbMap) error {
 	return nil
 }
 
+func DeleteAll(dbMap *gorp.DbMap) error {
+	_, err := dbMap.Exec("DELETE FROM todos")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (t *Todo) Get(dbMap *gorp.DbMap) error {
 	err := dbMap.SelectOne(t, "SELECT * FROM todos WHERE todo_id = ?", t.TodoID)
 	if err != nil {
