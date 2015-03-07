@@ -16,8 +16,15 @@ type Todo struct {
 
 func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
-	dbMap, data, _ := Init(w, r)
+	data, _ := DataParse(w, r)
+	dbMap, err := model.MysqlConnection()
+
+	if err != nil {
+		view.RenderErrorJson(apperror.NewDBError("", err))
+		return
+	}
 	defer dbMap.Db.Close()
+
 	todo := model.Todo{}
 	requiredFields := []string{"title"}
 	count, err := validate.RequiredData(data, requiredFields)
@@ -54,9 +61,13 @@ func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string
 
 func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
-	dbMap, data, _ := Init(w, r)
+	data, _ := DataParse(w, r)
+	dbMap, err := model.MysqlConnection()
+	if err != nil {
+		view.RenderErrorJson(apperror.NewDBError("", err))
+		return
+	}
 	defer dbMap.Db.Close()
-	var err error
 	requiredFields := []string{"todo_id", "title", "isCompleted"}
 	count, err := validate.RequiredData(data, requiredFields)
 	if err != nil {
@@ -89,7 +100,12 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 
 func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
+	_, params := DataParse(w, r)
+	dbMap, err := model.MysqlConnection()
+	if err != nil {
+		view.RenderErrorJson(apperror.NewDBError("", err))
+		return
+	}
 	defer dbMap.Db.Close()
 	requiredFields := []string{"id"}
 	count, err := validate.RequiredParams(params, requiredFields)
@@ -130,7 +146,12 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 
 func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
+	_, params := DataParse(w, r)
+	dbMap, err := model.MysqlConnection()
+	if err != nil {
+		view.RenderErrorJson(apperror.NewDBError("", err))
+		return
+	}
 	defer dbMap.Db.Close()
 	requiredFields := []string{"todo_id"}
 	count, err := validate.RequiredParams(params, requiredFields)
@@ -162,7 +183,12 @@ func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string
 
 func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
 	view := views.NewView(w)
-	dbMap, _, params := Init(w, r)
+	_, params := DataParse(w, r)
+	dbMap, err := model.MysqlConnection()
+	if err != nil {
+		view.RenderErrorJson(apperror.NewDBError("", err))
+		return
+	}
 	defer dbMap.Db.Close()
 
 	offset := 0
