@@ -30,7 +30,7 @@ You will need [Golang] and [mysql] installed. Make sure that $GOPATH and $GOROOT
 
 **Create and configure database**   
 Create a database named `wormhole`.    
-Modify `wormhole/config/dbconn.go`. Assign variables `dbUserName` and `dbPass` with your database username and password respectively.  
+Modify `wormhole/storage/mysql.go`. Assign variables `s.userName` and `s.pass` with your database username and password respectively.  
 *Note: Modify `dbIp` if you are not running database on localhost.
 
 **Install and run**    
