@@ -11,12 +11,13 @@ import (
 )
 
 var url = "http://localhost:8080"
+var namespace = "/api"
 var todoId int
 
 func post() error {
 	todo := make(map[string]interface{})
 	todo["title"] = "Abc"
-	resp, err := testCallApi(url+"/api/todos", "POST", todo)
+	resp, err := testCallApi(url+namespace+"/todos", "POST", todo)
 	if err != nil {
 		return err
 	}
@@ -33,7 +34,7 @@ func put() error {
 	todo["title"] = "Abc - 2"
 	todo["todo_id"] = todoId
 	todo["isCompleted"] = true
-	resp, err := testCallApi(url+"/api/todos", "PUT", todo)
+	resp, err := testCallApi(url+namespace+"/todos", "PUT", todo)
 	if err != nil {
 		return err
 	}
@@ -45,7 +46,7 @@ func put() error {
 }
 
 func getAll() error {
-	resp, err := testCallApi(url+"/api/todos?offset=0&count=10000", "GET", nil)
+	resp, err := testCallApi(url+namespace+"/todos?offset=0&count=10000", "GET", nil)
 	if err != nil {
 		return err
 	}
@@ -57,7 +58,7 @@ func getAll() error {
 }
 
 func get() error {
-	resp, err := testCallApi(url+"/api/todo?todo_id="+strconv.Itoa(todoId), "GET", nil)
+	resp, err := testCallApi(url+namespace+"/todo?todo_id="+strconv.Itoa(todoId), "GET", nil)
 	if err != nil {
 		return err
 	}
@@ -69,7 +70,7 @@ func get() error {
 }
 
 func delete() error {
-	resp, err := testCallApi(url+"/api/todos?id="+strconv.Itoa(todoId), "DELETE", nil)
+	resp, err := testCallApi(url+namespace+"/todos?id="+strconv.Itoa(todoId), "DELETE", nil)
 	if err != nil {
 		return err
 	}

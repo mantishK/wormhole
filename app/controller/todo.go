@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mantishK/httprouter"
 	"github.com/mantishK/wormhole/app/apperror"
 	"github.com/mantishK/wormhole/app/model"
 	"github.com/mantishK/wormhole/app/validate"
@@ -14,7 +15,8 @@ import (
 type Todo struct {
 }
 
-func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) Add(w http.ResponseWriter, r *http.Request, _ httprouter.Params, filterData map[string]interface{}) {
+	// func (t *Todo) Add(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view := views.NewView(w)
 	data, _ := DataParse(w, r)
 	dbMap, err := model.MysqlConnection()
@@ -59,7 +61,8 @@ func (t *Todo) Add(w http.ResponseWriter, r *http.Request, filterData map[string
 	view.RenderJson(result)
 }
 
-func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) Update(w http.ResponseWriter, r *http.Request, _ httprouter.Params, filterData map[string]interface{}) {
+	// func (t *Todo) Update(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view := views.NewView(w)
 	data, _ := DataParse(w, r)
 	dbMap, err := model.MysqlConnection()
@@ -98,7 +101,8 @@ func (t *Todo) Update(w http.ResponseWriter, r *http.Request, filterData map[str
 	view.RenderJson(result)
 }
 
-func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, _ httprouter.Params, filterData map[string]interface{}) {
+	// func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view := views.NewView(w)
 	_, params := DataParse(w, r)
 	dbMap, err := model.MysqlConnection()
@@ -144,7 +148,8 @@ func (t *Todo) Delete(w http.ResponseWriter, r *http.Request, filterData map[str
 	view.RenderJson(result)
 }
 
-func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) Get(w http.ResponseWriter, r *http.Request, _ httprouter.Params, filterData map[string]interface{}) {
+	// func (t *Todo) Get(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view := views.NewView(w)
 	_, params := DataParse(w, r)
 	dbMap, err := model.MysqlConnection()
@@ -181,7 +186,8 @@ func (t *Todo) Get(w http.ResponseWriter, r *http.Request, filterData map[string
 	view.RenderJson(result)
 }
 
-func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, filterData map[string]interface{}) {
+func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params, filterData map[string]interface{}) {
+	// func (t *Todo) GetAllTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view := views.NewView(w)
 	_, params := DataParse(w, r)
 	dbMap, err := model.MysqlConnection()

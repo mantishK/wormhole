@@ -4,9 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	// "github.com/julienschmidt/httprouter"
+	"github.com/mantishK/httprouter"
 	"github.com/mantishK/wormhole/app/controller"
 	"github.com/mantishK/wormhole/app/filters"
-	"github.com/mantishK/wormhole/router"
 )
 
 func main() {
@@ -20,35 +21,25 @@ func route() {
 	//Create controller
 	todoController := controller.Todo{}
 
+	router := httprouter.New()
+
 	//version
-	version := make([]string, 5, 5)
-	version[0] = ""
-	version[1] = "/v1"
+	ver := make([]string, 2, 5)
+	ver[0] = ""
+	ver[1] = "/v1"
 
-	//Add new versions as and when required
-	//version[2] = "/v2"
+	ns := "/api"
 
-	//Create Router
-	myRouter := router.New()
-
-	//Create router with name spaces for api and public files
-	//myRouter := router.NewNewWithNameSpace("api","app")
-
-	//route
-	for _, versionName := range version {
-		//todos
-		myRouter.Get(versionName, "/todo", todoController.Get, authenticateFilter)
-		myRouter.Get(versionName, "/todos", todoController.GetAllTodos, authenticateFilter)
-		myRouter.Post(versionName, "/todos", todoController.Add, authenticateFilter)
-		myRouter.Delete(versionName, "/todos", todoController.Delete, authenticateFilter)
-		myRouter.Put(versionName, "/todos", todoController.Update, authenticateFilter, authorizeFilter)
-
+	for _, verName := range ver {
+		router.GET(ns+verName+"/todo", todoController.Get, authenticateFilter, authorizeFilter)
+		router.GET(ns+verName+"/todos", todoController.GetAllTodos, authenticateFilter, authorizeFilter)
+		router.POST(ns+verName+"/todos", todoController.Add, authenticateFilter, authorizeFilter)
+		router.DELETE(ns+verName+"/todos", todoController.Delete, authenticateFilter, authorizeFilter)
+		router.PUT(ns+verName+"/todos", todoController.Update, authenticateFilter, authorizeFilter)
 	}
+	router.NotFound = http.FileServer(http.Dir("public")).ServeHTTP
 
-	//New versions to be easily overridden
-	// myRouter.Get(version[1], "/todo", noteController.GetV1, authenticateFilter)
-
-	http.Handle("/", myRouter)
+	http.Handle("/", router)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatalln(err)
