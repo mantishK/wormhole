@@ -1,4 +1,4 @@
-#wormhole
+# wormhole
 An example todo application with ember and Golang for writing idiomatic/maintainable/structured Golang backend web applications.
 
 ### What problem does this solve?
